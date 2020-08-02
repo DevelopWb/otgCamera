@@ -98,7 +98,6 @@ dependencies {
     api librarys["picker_view"]
     api librarys["matisse"]
     api librarys["eventbus"]
-    api project(':zXingLiteLib')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
 }
