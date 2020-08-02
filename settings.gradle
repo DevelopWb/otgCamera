@@ -1,1 +1,1 @@
-include ':app', ':libusbcamera'
+include ':app', ':libusbcamera', ':zXingLiteLib', ':module_Base'

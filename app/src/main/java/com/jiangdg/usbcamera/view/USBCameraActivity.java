@@ -72,6 +72,7 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
         @Override
         public void onAttachDev(UsbDevice device) {
+            Log.e(TAG,"onAttachDev---"+device.getSerialNumber());
             // request open permission
             if (!isRequest) {
                 isRequest = true;
@@ -83,6 +84,7 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
         @Override
         public void onDettachDev(UsbDevice device) {
+            Log.e(TAG,"onDettachDev---"+device.getSerialNumber());
             // close camera
             if (isRequest) {
                 isRequest = false;
@@ -93,10 +95,12 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
         @Override
         public void onConnectDev(UsbDevice device, boolean isConnected) {
+
             if (!isConnected) {
                 showShortMsg("fail to connect,please check resolution params");
                 isPreview = false;
             } else {
+                Log.e(TAG,"onConnectDev--"+device.getSerialNumber());
                 isPreview = true;
                 showShortMsg("connecting");
                 // initialize seekbar
@@ -122,6 +126,7 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
         @Override
         public void onDisConnectDev(UsbDevice device) {
+            Log.e(TAG,"onDisConnectDev--"+device.getSerialNumber());
             showShortMsg("disconnecting");
         }
     };
@@ -143,7 +148,7 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
         mCameraHelper.setOnPreviewFrameListener(new AbstractUVCCameraHandler.OnPreViewResultListener() {
             @Override
             public void onPreviewResult(byte[] nv21Yuv) {
-                Log.d(TAG, "onPreviewResult: "+nv21Yuv.length);
+                Log.e(TAG,"onPreviewResult--"+nv21Yuv.length);
             }
         });
     }
@@ -386,6 +391,7 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
     @Override
     public void onSurfaceCreated(CameraViewInterface view, Surface surface) {
         if (!isPreview && mCameraHelper.isCameraOpened()) {
+            Log.e(TAG,"onSurfaceCreated--"+"准备开始预览");
             mCameraHelper.startPreview(mUVCCameraView);
             isPreview = true;
         }
@@ -393,12 +399,13 @@ public class USBCameraActivity extends AppCompatActivity implements CameraDialog
 
     @Override
     public void onSurfaceChanged(CameraViewInterface view, Surface surface, int width, int height) {
-
+        Log.e(TAG,"onSurfaceChanged--"+"----------");
     }
 
     @Override
     public void onSurfaceDestroy(CameraViewInterface view, Surface surface) {
         if (isPreview && mCameraHelper.isCameraOpened()) {
+            Log.e(TAG,"onSurfaceDestroy--"+"----------");
             mCameraHelper.stopPreview();
             isPreview = false;
         }

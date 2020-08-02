@@ -1,20 +1,17 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.jiangdongguo'
 
+
+def configs = rootProject.ext.android
 android {
-    compileSdkVersion rootProject.ext.versionCompiler
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.versionTarget
-        versionCode 2
-        versionName rootProject.ext.versionNameString
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    compileSdkVersion configs.compileSdkVersion
+//    buildToolsVersion '28.0.3'
 
-        // "armeabi-v7a" can adapter most of the devices
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
+    defaultConfig {
+        minSdkVersion configs.minSdkVersion
+        targetSdkVersion configs.targetSdkVersion
+        consumerProguardFiles 'proguard-rules.pro'
+
+        buildConfigField 'boolean', 'MEDIA_DEBUG', 'false'
     }
     buildTypes {
         release {
@@ -24,15 +21,14 @@ android {
     }
     // solving com.android.tools.r8.CompilationFailedException: Compilation failed to complete
     compileOptions {
-        sourceCompatibility rootProject.ext.javaSourceCompatibility
-        targetCompatibility rootProject.ext.javaTargetCompatibility
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-    implementation "androidx.appcompat:appcompat:${androidXVersion}"
-    api "com.serenegiant:common:${commonLibVersion}"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    api "com.serenegiant:common:4.1.1"
 }

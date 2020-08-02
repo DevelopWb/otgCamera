@@ -1,0 +1,104 @@
+apply plugin: 'com.android.library'
+
+def configs = rootProject.ext.android
+def librarys = rootProject.ext.dependencies
+android {
+    compileSdkVersion configs.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion configs.minSdkVersion
+        targetSdkVersion configs.targetSdkVersion
+        versionCode configs.versionCode
+        versionName configs.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+
+        debug {
+                consumerProguardFiles 'proguard-rules.pro'
+        }
+
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api librarys["appcompat-v7"]
+    api librarys["design"]
+    testImplementation 'junit:junit:4.12'
+    //noinspection GradleCompatible
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+
+    //转换器，请求结果转换成Model
+    //okhttp
+    api librarys["okhttp"]
+    api librarys["logging-interceptor"]
+    //Gson 库
+    api librarys["gson"]
+    //路由
+    //api librarys["arouter-api"]
+    //annotationProcessor librarys["arouter-compiler"]
+    //
+    api librarys["rxjava"]
+    api librarys["rxandroid"]
+    //retrofit2
+    api librarys["retrofit"]
+    api librarys["converter-gson"]
+    api librarys["retrofit-adapters"]
+    api librarys["converter-wire"]
+    api librarys["adapter-rxjava2"]
+    api librarys["converter-scalars"]        //ConverterFactory的String依赖包
+    api librarys["wire-runtime"]
+    //
+    api librarys["BaseRecyclerViewAdapterHelper"]
+    //Glide
+    api librarys["glide"]
+    annotationProcessor librarys["compiler"]
+    //压缩
+    api librarys["Luban"]
+    //下拉刷新
+    api librarys["SmartRefreshLayout"]
+    api librarys["SmartRefreshHeader"]       //没有使用特殊Header，可以不加这行
+    // RxLifecycle
+    api librarys["rxlifecycle"]
+    api librarys["rxlifecycle-android"]
+    api librarys["rxlifecycle-components"]
+
+    api librarys["multidex"]
+    //leakcanary
+    debugImplementation librarys["leakcanary-android"]
+    releaseImplementation librarys["leakcanary-android-no-op"]
+
+    api librarys["logger"]
+    api librarys["rxpermissions"]
+    api librarys["Toasty"]
+    //热更新
+    api 'com.tencent.bugly:crashreport_upgrade:1.4.1'
+    // 指定tinker依赖版本（注：应用升级1.3.5版本起，不再内置tinker）
+    api 'com.tencent.tinker:tinker-android-lib:1.9.13'
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    api 'com.tencent.bugly:nativecrashreport:latest.release'
+    api 'androidx.cardview:cardview:1.0.0'
+    api librarys["hawk"]
+    api librarys["immersionbar"]
+    api librarys["picker_view"]
+    api librarys["matisse"]
+    api librarys["eventbus"]
+    api project(':zXingLiteLib')
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+}

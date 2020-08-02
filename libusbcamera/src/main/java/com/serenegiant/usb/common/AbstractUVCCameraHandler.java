@@ -808,14 +808,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
         private final IFrameCallback mIFrameCallback = new IFrameCallback() {
             @Override
             public void onFrame(final ByteBuffer frame) {
-//				final MediaVideoBufferEncoder videoEncoder;
-//				synchronized (mSync) {
-//					videoEncoder = mVideoEncoder;
-//				}
-//				if (videoEncoder != null) {
-//					videoEncoder.frameAvailableSoon();
-//					videoEncoder.encode(frame);
-//				}
                 int len = frame.capacity();
                 final byte[] yuv = new byte[len];
                 frame.get(yuv);
@@ -839,7 +831,6 @@ public abstract class AbstractUVCCameraHandler extends Handler {
                     if(isSupportOverlay) {
                         TxtOverlay.getInstance().overlay(yuv, new SimpleDateFormat("yyyy-MM-dd EEEE HH:mm:ss").format(new Date()));
                     }
-
                     mH264Consumer.setRawYuv(yuv, mWidth, mHeight);
                 }
             }
