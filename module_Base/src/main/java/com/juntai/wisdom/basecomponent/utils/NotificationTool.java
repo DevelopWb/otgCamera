@@ -1,6 +1,7 @@
 package com.juntai.wisdom.basecomponent.utils;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,6 +12,8 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 
 import com.juntai.wisdom.basecomponent.app.BaseApplication;
@@ -36,8 +39,7 @@ public class NotificationTool {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-          createNotificationChannel(context,channelId, channelName, importance);
-
+            createNotificationChannel(context,channelId, channelName, importance);
         }
         // 创建PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
@@ -67,7 +69,7 @@ public class NotificationTool {
      * @param ongo:是否  设置为一个正在进行的通知，此时用户无法清除通知
      * @param intent
      */
-    public static Notification sendNotifMessage(Context context,int id,String title,String content,int imageRes,boolean ongo,Intent intent){
+    public static void sendNotifMessage(Context context,int id,String title,String content,int imageRes,boolean ongo,Intent intent){
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         String channelId = "notifi";
         String channelName = "消息";
@@ -83,7 +85,6 @@ public class NotificationTool {
                 .setContentTitle(title)
                 .setContentText(content)
                 .setSound(uri)
-                .setNumber(66)
                 .setWhen(System.currentTimeMillis())
                 .setOngoing(ongo)//设置为一个正在进行的通知，此时用户无法清除通知
                 .setSmallIcon(imageRes)
@@ -92,7 +93,6 @@ public class NotificationTool {
                 .setAutoCancel(true)
                 .build();
         manager.notify(id, notification);
-        return notification;
     }
 
     public static void startNotifBg(Context context, int id, String title, String content, int imageRes){
@@ -123,7 +123,6 @@ public class NotificationTool {
     @TargetApi(Build.VERSION_CODES.O)
     private static void createNotificationChannel(Context context,String channelId, String channelName, int importance) {
         NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
-        channel.setShowBadge(true);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                 NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(channel);

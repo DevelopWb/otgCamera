@@ -1,9 +1,10 @@
 package com.juntai.wisdom.basecomponent.base;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.juntai.wisdom.basecomponent.mvp.BasePresenter;
@@ -268,9 +269,7 @@ public abstract class BaseDownLoadActivity<P extends BasePresenter> extends Base
         if (baseBottomDialog != null) {
             if (baseBottomDialog.isAdded()) {
                 onItemClick = null;
-                if (baseBottomDialog.getDialog().isShowing()){
-                    baseBottomDialog.dismiss();
-                }
+                baseBottomDialog.dismiss();
             }
         }
     }
@@ -280,7 +279,7 @@ public abstract class BaseDownLoadActivity<P extends BasePresenter> extends Base
      */
     public interface  OnFileDownloaded{
 
-        void  onFileDownloaded(String  fileName);
+        void  onFileDownloaded(String fileName);
 
     }
 

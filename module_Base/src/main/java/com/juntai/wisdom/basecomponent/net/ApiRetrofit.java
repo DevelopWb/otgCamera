@@ -79,8 +79,8 @@ public class ApiRetrofit {
         client = new OkHttpClient.Builder()
                 //添加log拦截器
                 .addInterceptor(getLogger())
-                .connectTimeout(25, TimeUnit.SECONDS)
-                .readTimeout(25, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
                 .build();
 
         retrofit = new Retrofit.Builder()

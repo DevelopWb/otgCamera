@@ -9,10 +9,9 @@ public class ActionConfig {
     /**登录*/
     //public static String ACTION_LOGIN = BaseApplication.app.getPackageName() + ".login";
     /**地图查看*/
-    public final static String ACTION_LOCATION_LOOK = BaseApplication.app.getPackageName() + ".im.location.look";
+    public final static String ACTION_LOCATION_LOOK = BaseApplication.app.getPackageName() + ".im.location_icon.look";
     /**地图选择*/
-    public final static String ACTION_LOCATION_SELTION = BaseApplication.app.getPackageName() + ".im.location.seltion";
-//    com.juntai.wisdom.bdmap.act
+    public final static String ACTION_LOCATION_SELTION = BaseApplication.app.getPackageName() + ".im.location_icon.seltion";
 
     /*=====================================广播==================================*/
     /**需要重新登录*/
@@ -23,10 +22,6 @@ public class ActionConfig {
     public static final String BROAD_CASE_DETAILS = BaseApplication.app.getPackageName() + ".CaseDetails";
     /**未读消息更新*/
     public static final String UN_READ_MESSAG_TAG = BaseApplication.app.getPackageName() + ".unReadTag";
-    /**个人积分刷新*/
-    public static final String UPDATE_MY_SCORE = BaseApplication.app.getPackageName() + ".updateMyScore";
-    /**场所管理从业人员刷新*/
-    public static final String REFRASH_SITE_EMPLOYEE_LIST = BaseApplication.app.getPackageName() + ".employeeList";
 
     /*====================================服务====================================*/
     /**地图选择*/

@@ -2,10 +2,8 @@ package com.juntai.wisdom.basecomponent.utils;
 
 
 import android.content.Context;
-import androidx.core.content.ContextCompat;
-import android.widget.Toast;
 
-import com.juntai.wisdom.basecomponent.R;
+import com.juntai.wisdom.basecomponent.app.BaseApplication;
 
 import es.dmoral.toasty.Toasty;
 
@@ -32,9 +30,7 @@ public class ToastUtils {
      * @param msg
      */
     public static void info(Context context,String msg){
-//        Toasty.info(context.getApplicationContext(),msg).show();//蓝色
-        Toasty.custom(context.getApplicationContext(),msg,null, ContextCompat.getColor(context, R.color.gray_toast_bt),
-                ContextCompat.getColor(context.getApplicationContext(), R.color.white), Toast.LENGTH_SHORT,false,true).show();
+        Toasty.info(context.getApplicationContext(),msg).show();
     }
     public static void info(Context context,int msg){
         Toasty.info(context,msg).show();

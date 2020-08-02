@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.juntai.wisdom.basecomponent.R;
 import com.juntai.wisdom.basecomponent.app.BaseApplication;
 
 /**
@@ -38,6 +39,15 @@ public class BaseAppUtils {
         return null;
     }
 
+    //判断当前应用是否是debug状态
+    public static boolean isApkInDebug(Context context) {
+        try {
+            ApplicationInfo info = context.getApplicationInfo();
+            return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     /**
      * 获取logo
      * @return
@@ -101,16 +111,5 @@ public class BaseAppUtils {
             e.printStackTrace();
         }
         return null;
-    }
-
-
-    //判断当前应用是否是debug状态
-    public static boolean isApkInDebug(Context context) {
-        try {
-            ApplicationInfo info = context.getApplicationInfo();
-            return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }

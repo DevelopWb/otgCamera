@@ -23,14 +23,9 @@ public class GsonTools {
     }
 
     public static <T> T changeGsonToBean(String gsonString, Class<T> cls) {
-        try {
-            Gson gson = new Gson();
-            T t = gson.fromJson(gsonString, cls);
-            return t;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        Gson gson = new Gson();
+        T t = gson.fromJson(gsonString, cls);
+        return t;
     }
 
     public static <T> List<T> changeGsonToList(String gsonString, Class<T> cls) {

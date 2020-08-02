@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class FloatNullAdapter extends TypeAdapter<Float> {
     @Override
     public Float read(JsonReader reader) throws IOException {
-        //  Auto-generated method stub
+        // TODO Auto-generated method stub
         if (reader.peek() == JsonToken.STRING) {
             reader.skipValue(); //跳过当前
             return -1f;
@@ -28,7 +28,7 @@ public class FloatNullAdapter extends TypeAdapter<Float> {
 
     @Override
     public void write(JsonWriter writer, Float value) throws IOException {
-        //  Auto-generated method stub
+        // TODO Auto-generated method stub
         writer.value(value);
     }
 }

@@ -381,7 +381,7 @@ public class FileCacheUtils {
                         }
                         instream.close();//关闭输入流
                     }
-                } catch (java.io.FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
                     Log.d("TestFile", "The File doesn't not exist.");
                 } catch (IOException e) {
                     Log.d("TestFile", e.getMessage());

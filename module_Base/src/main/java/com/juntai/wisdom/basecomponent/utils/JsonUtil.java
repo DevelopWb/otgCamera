@@ -1,10 +1,6 @@
 package com.juntai.wisdom.basecomponent.utils;
 
 
-import java.io.UnsupportedEncodingException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * 格式化json
  * @aouther ZhangZhenlong
@@ -159,94 +155,5 @@ public class JsonUtil {
         return outBuffer.toString();
     }
 
-    /**
-     * 是否是乱码
-     * @param strName
-     * @return
-     */
-    public static boolean isMessyCode(String strName) {
-        try {
-            Pattern p = Pattern.compile("\\s*|\t*|\r*|\n*");
-            Matcher m = p.matcher(strName);
-            String after = m.replaceAll("");
-            String temp = after.replaceAll("\\p{P}", "");
-            char[] ch = temp.trim().toCharArray();
-
-            int length = (ch != null) ? ch.length : 0;
-            for (int i = 0; i < length; i++) {
-                char c = ch[i];
-                if (!Character.isLetterOrDigit(c)) {
-                    String str = "" + ch[i];
-                    if (!str.matches("[\u4e00-\u9fa5]+")) {
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-
-    /**
-     * 转码（解决乱码问题）
-     * @param resultData
-     * @return
-     */
-    public static String transcoding(String resultData){
-        String UTF_Str = "";
-        String GB_Str = "";
-        boolean is_cN = false;
-        try {
-            UTF_Str = new String(resultData.getBytes("ISO-8859-1"), "UTF-8");
-            is_cN = !isMessyCode(UTF_Str);
-            if (!is_cN) {
-                GB_Str = new String(resultData.getBytes("ISO-8859-1"), "GBK");
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        if(is_cN){
-            return UTF_Str;
-        }else{
-            return GB_Str;
-        }
-    }
-
-    // 判断一个字符是否是中文
-    public static boolean isChinese(char c) {
-        return c >= 0x4E00 && c <= 0x9FA5;// 根据字节码判断
-    }
-
-    // 判断一个字符串是否含有中文
-    public static boolean isChinese(String str) {
-        if (str == null)
-            return false;
-        for (char c : str.toCharArray()) {
-            if (isChinese(c))
-                return true;// 有一个中文字符就返回
-        }
-        return false;
-    }
-
-    /**
-     * 纯数字
-     * @param s
-     * @return
-     */
-    public static boolean isNumber(String s){
-        if (s == null){
-            return false;
-        }
-        Pattern p = Pattern.compile("[0-9]*");
-        Matcher m = p.matcher(s);
-        if (m.matches()){
-            return true;
-        }
-        return false;
-    }
 }
 

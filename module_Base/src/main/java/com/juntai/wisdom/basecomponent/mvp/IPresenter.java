@@ -4,7 +4,7 @@ package com.juntai.wisdom.basecomponent.mvp;
  * @aouther Ma
  * @date 2019/3/6
  */
-public interface IPresenter<V extends IView> {
+public interface IPresenter<V extends BaseIView> {
 
     /**
      * 绑定 View

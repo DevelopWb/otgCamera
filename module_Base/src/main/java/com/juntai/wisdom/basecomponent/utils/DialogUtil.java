@@ -3,8 +3,9 @@ package com.juntai.wisdom.basecomponent.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * 对话框辅助类,需要自己调用show方法

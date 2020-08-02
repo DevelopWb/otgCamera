@@ -1,5 +1,6 @@
 package com.juntai.wisdom.basecomponent.utils;
 
+
 import androidx.annotation.Nullable;
 
 public final class Preconditions {

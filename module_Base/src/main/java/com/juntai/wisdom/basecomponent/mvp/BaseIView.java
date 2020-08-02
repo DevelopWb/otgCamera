@@ -3,7 +3,7 @@ package com.juntai.wisdom.basecomponent.mvp;
 
 import com.trello.rxlifecycle2.LifecycleTransformer;
 
-public interface IView extends IViewExpand{
+public interface BaseIView extends IViewExpand{
     /**
      * 显示dialog
      */

@@ -1,12 +1,9 @@
 package com.juntai.wisdom.basecomponent.base;
 
-import android.content.Intent;
-
 import com.google.gson.JsonParseException;
-import com.juntai.wisdom.basecomponent.app.BaseApplication;
 import com.juntai.wisdom.basecomponent.bean.OpenLiveBean;
-import com.juntai.wisdom.basecomponent.mvp.IView;
-import com.juntai.wisdom.basecomponent.utils.ActionConfig;
+import com.juntai.wisdom.basecomponent.mvp.BaseIView;
+import com.juntai.wisdom.basecomponent.utils.EventManager;
 import com.juntai.wisdom.basecomponent.utils.LogUtil;
 
 import org.json.JSONException;
@@ -20,7 +17,7 @@ import io.reactivex.observers.DisposableObserver;
 import retrofit2.HttpException;
 
 public abstract class BaseObserver<T> extends DisposableObserver<T> {
-    protected IView view;
+    protected BaseIView view;
     /**
      * 解析数据失败
      */
@@ -39,7 +36,7 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
     public static final int CONNECT_TIMEOUT = 1004;
 
 
-    public BaseObserver(IView view) {
+    public BaseObserver(BaseIView view) {
         this.view = view;
     }
 
@@ -61,16 +58,16 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
             if (model.success) {
                 if (model.status == 200) {
                     onSuccess(bean);
-                }else {
-                    onError(model.message == null? "error" : model.message);
+                } else {
+                    if (view != null) {
+                        view.onError("", ((BaseResult) bean).msg == null ? "error" : ((BaseResult) bean).msg);
+                    } else {
+                        onError(((BaseResult) bean).msg == null ? "error" : ((BaseResult) bean).msg);
+                    }
                 }
             } else {
                 //单点登录
-                if (BaseApplication.isReLoadWarn){
-                    BaseApplication.isReLoadWarn = false;
-                    LogUtil.e("resule == false");
-                    BaseApplication.app.sendBroadcast(new Intent().setAction(ActionConfig.BROAD_LOGIN).putExtra("error", model.error));
-                }
+                EventManager.getEventBus().post(EventManager.SINGLE_LOGIN);
             }
         } catch (ClassCastException ee) {
             LogUtil.e("数据解析失败" + ee.toString());
@@ -113,10 +110,6 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
 
     }
 
-    /**
-     * 异常
-     * @param unknownError
-     */
     private void onException(int unknownError) {
         switch (unknownError) {
             case CONNECT_ERROR:

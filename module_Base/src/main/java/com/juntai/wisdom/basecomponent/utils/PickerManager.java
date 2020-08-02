@@ -2,7 +2,6 @@ package com.juntai.wisdom.basecomponent.utils;
 
 import android.content.Context;
 import android.graphics.Color;
-import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -12,7 +11,6 @@ import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
-import com.juntai.wisdom.basecomponent.R;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -124,9 +122,9 @@ public class PickerManager<T> {
                 .setDividerColor(Color.LTGRAY)//设置分割线的颜色
 //                .setSelectOptions(0, 1)//默认选中项
                 .setTitleColor(Color.BLACK)//标题文字颜色
-                .setSubmitColor(ContextCompat.getColor(mContext,R.color.colorThemeDark))//确定按钮文字颜色
-                .setCancelColor(ContextCompat.getColor(mContext,R.color.text_title))//取消按钮文字颜色
-                .setTitleBgColor(ContextCompat.getColor(mContext,R.color.gray_light))//标题背景颜色 Night mode
+                .setSubmitColor(Color.parseColor("#3478f7"))//确定按钮文字颜色
+                .setCancelColor(Color.parseColor("#8b8b8b"))//取消按钮文字颜色
+                .setTitleBgColor(Color.parseColor("#f2f2f2"))//标题背景颜色 Night mode
 
                 .setBgColor(Color.WHITE)//滚轮背景颜色 Night mode
                 .isRestoreItem(true)//切换时是否还原，设置默认选中第一项。
@@ -156,9 +154,9 @@ public class PickerManager<T> {
                 .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
                 .isCyclic(false)//是否循环滚动
                 .setTitleColor(Color.BLACK)//标题文字颜色
-                .setSubmitColor(ContextCompat.getColor(context,R.color.colorThemeDark))//确定按钮文字颜色
-                .setCancelColor(ContextCompat.getColor(context,R.color.text_title))//取消按钮文字颜色
-                .setTitleBgColor(ContextCompat.getColor(context,R.color.gray_light))//标题背景颜色 Night mode
+                .setSubmitColor(Color.parseColor("#3478f7"))//确定按钮文字颜色
+                .setCancelColor(Color.parseColor("#8b8b8b"))//取消按钮文字颜色
+                .setTitleBgColor(Color.parseColor("#f2f2f2"))//标题背景颜色 Night mode
                 .setBgColor(Color.WHITE)//滚轮背景颜色 Night mode
                 .setLabel("年", "月", "日", "时", "分", "秒")//默认设置为年月日时分秒
                 .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。

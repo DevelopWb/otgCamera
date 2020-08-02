@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class IntegerNullAdapter extends TypeAdapter<Integer> {
     @Override
     public Integer read(JsonReader reader) throws IOException {
-        //  Auto-generated method stub
+        // TODO Auto-generated method stub
         if (reader.peek() == JsonToken.STRING) {
             reader.skipValue(); //跳过当前
             return 0;
@@ -28,7 +28,7 @@ public class IntegerNullAdapter extends TypeAdapter<Integer> {
 
     @Override
     public void write(JsonWriter writer, Integer value) throws IOException {
-        //  Auto-generated method stub
+        // TODO Auto-generated method stub
         writer.value(value);
     }
 }

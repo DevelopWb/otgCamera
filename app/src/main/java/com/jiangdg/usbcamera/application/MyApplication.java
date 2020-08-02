@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.jiangdg.usbcamera.UVCCameraHelper;
 import com.jiangdg.usbcamera.utils.CrashHandler;
+import com.orhanobut.hawk.Hawk;
 
 /**application class
  *
@@ -20,5 +21,6 @@ public class MyApplication extends Application {
         super.onCreate();
         mCrashHandler = CrashHandler.getInstance();
         mCrashHandler.init(getApplicationContext(), getClass());
+        Hawk.init(this).build();
     }
 }

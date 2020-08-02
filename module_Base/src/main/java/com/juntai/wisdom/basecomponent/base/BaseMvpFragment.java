@@ -3,18 +3,18 @@ package com.juntai.wisdom.basecomponent.base;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import com.juntai.wisdom.basecomponent.mvp.IPresenter;
-import com.juntai.wisdom.basecomponent.mvp.IView;
+import com.juntai.wisdom.basecomponent.mvp.BaseIView;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
-public abstract class BaseMvpFragment<P extends IPresenter> extends BaseLazyFragment implements IView {
+public abstract class BaseMvpFragment<P extends IPresenter> extends BaseLazyFragment implements BaseIView {
 
     protected P mPresenter;
     protected abstract P createPresenter();
@@ -85,6 +85,7 @@ public abstract class BaseMvpFragment<P extends IPresenter> extends BaseLazyFrag
      * @param <V>
      * @return
      */
+    @Override
     public <V extends View> V getView(int viewId){
         return mRootView.findViewById(viewId);
     }

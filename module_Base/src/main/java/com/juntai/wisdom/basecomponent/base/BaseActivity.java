@@ -1,22 +1,14 @@
 package com.juntai.wisdom.basecomponent.base;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import android.support.design.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -31,17 +23,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.gyf.barlibrary.ImmersionBar;
 import com.juntai.wisdom.basecomponent.R;
+import com.juntai.wisdom.basecomponent.utils.ActivityManagerTool;
 import com.juntai.wisdom.basecomponent.utils.DisplayUtil;
 import com.juntai.wisdom.basecomponent.utils.DividerItemDecoration;
 import com.juntai.wisdom.basecomponent.utils.EventManager;
 import com.juntai.wisdom.basecomponent.utils.FileCacheUtils;
 import com.juntai.wisdom.basecomponent.utils.LoadingDialog;
 import com.juntai.wisdom.basecomponent.utils.LogUtil;
+import com.juntai.wisdom.basecomponent.utils.PubUtil;
 import com.juntai.wisdom.basecomponent.utils.ScreenUtils;
 import com.juntai.wisdom.basecomponent.utils.ToastUtils;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -50,7 +54,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.functions.Consumer;
 import top.zibin.luban.CompressionPredicate;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
@@ -64,6 +70,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
 
     public abstract void initData();
 
+
     public Context mContext;
     public Toast toast;
     private Toolbar toolbar;
@@ -74,16 +81,15 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
     private TextView titleName, titleRightTv;
     private boolean autoHideKeyboard = true;
     public FrameLayout frameLayout;
-    public static int ActivityResult = 1001;//activity返回值
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventManager.getLibraryEvent().register(this);//注册
+        EventManager.getEventBus().register(this);//注册
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);// 锁定竖屏
         mContext = this;
         mImmersionBar = ImmersionBar.with(this);
-//        initWidows();
+        initWidows();
         setContentView(R.layout.activity_base);
         frameLayout = findViewById(R.id.base_content);
         if (0 != getLayoutView()) {
@@ -100,64 +106,33 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
         mBackTv = findViewById(R.id.back_tv);
         titleName = findViewById(R.id.title_name);
         titleRightTv = findViewById(R.id.title_rightTv);
-        initToolbarAndStatusBar();
+        initToolbarAndStatusBar(true);
         initLeftBackTv(true);
         initView();
         initData();
-    }
-    /**
-     * 配置view的margin属性
-     */
-    public void setMarginOfLinearLayout(View view, int left, int top, int right, int bottom) {
-        left = DisplayUtil.dp2px(this, left);
-        top = DisplayUtil.dp2px(this, top);
-        right = DisplayUtil.dp2px(this, right);
-        bottom = DisplayUtil.dp2px(this, bottom);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(view.getLayoutParams());
-        layoutParams.setMargins(left, top, right, bottom);
-        view.setLayoutParams(layoutParams);
-    }
-    /**
-     * 配置view的margin属性
-     */
-    public void setMarginParentOfConstraintLayout(View view, int left, int top, int right, int bottom) {
-        left = DisplayUtil.dp2px(this, left);
-        top = DisplayUtil.dp2px(this, top);
-        right = DisplayUtil.dp2px(this, right);
-        bottom = DisplayUtil.dp2px(this, bottom);
-        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(view.getLayoutParams());
-        layoutParams.setMargins(left, top, right, bottom);
-        view.setLayoutParams(layoutParams);
-    }
-    /**
-     * 字体大小不随系统变化而变化 字体待定
-     * @return
-     */
-    @Override
-    public Resources getResources() {
-        Resources res = super.getResources();
-        try {
-            Configuration config=new Configuration();
-            config.setToDefaults();
-            res.updateConfiguration(config,res.getDisplayMetrics() );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return res;
+        ActivityManagerTool.getInstance().addActivity(this);
     }
 
     /**
      * 警小宝 东关派出所版本 初始化toolbar和状态栏
      */
-    protected void initToolbarAndStatusBar() {
-        getToolbar().setVisibility(View.VISIBLE);
-        getToolbar().setNavigationIcon(null);
-        getToolbar().setBackgroundResource(R.drawable.bg_white_only_bottom_gray_shape_1px);
-        //状态栏配置
-        mBaseRootCol.setFitsSystemWindows(true);
-        mImmersionBar.statusBarColor(R.color.white)
-                .statusBarDarkFont(true)
-                .init();
+    protected void initToolbarAndStatusBar(boolean visible) {
+        if (visible) {
+            getToolbar().setVisibility(View.VISIBLE);
+            getToolbar().setNavigationIcon(null);
+            getToolbar().setBackgroundResource(R.drawable.bg_white_only_bottom_gray_shape_1px);
+            //状态栏配置
+            mBaseRootCol.setFitsSystemWindows(true);
+            mImmersionBar.statusBarColor(R.color.white)
+                    .statusBarDarkFont(true)
+                    .init();
+        }else{
+            getToolbar().setVisibility(View.GONE);
+            //状态栏配置
+            mBaseRootCol.setFitsSystemWindows(false);
+            mImmersionBar.reset().transparentStatusBar().init();
+        }
+
     }
 
     /**
@@ -168,7 +143,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
     protected void initLeftBackTv(boolean isShow) {
         if (isShow) {
             mBackTv.setVisibility(View.VISIBLE);
-            Drawable drawable = mContext.getResources().getDrawable(R.mipmap.module_base_app_back);
+            Drawable drawable = mContext.getResources().getDrawable(R.drawable.app_back);
             // 这一步必须要做,否则不会显示.
             drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             mBackTv.setCompoundDrawables(drawable, null, null, null);
@@ -380,7 +355,8 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
 
     @Override
     protected void onDestroy() {
-        EventManager.getLibraryEvent().unregister(this);//解除注册
+        ActivityManagerTool.getInstance().removeActivity(this);
+        EventManager.getEventBus().unregister(this);//注册
         super.onDestroy();
         if (mImmersionBar != null) {
             mImmersionBar.destroy();  //必须调用该方法，防止内存泄漏，不调用该方法，如果界面bar发生改变，在不关闭app的情况下，退出此界面再进入将记忆最后一次bar改变的状态
@@ -403,7 +379,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
      * @return
      */
     public List<String> getTestData() {
-        return Arrays.asList(new String[]{"test1", "test2", "test3", "测试很测试很多数据的测试很多数据的多数据的"});
+        return Arrays.asList(new String[]{ "test2", "test3", "test4", "test5", "测试很测试很多数据的测试很多数据的多数据的XXXXXXXXXXXXX", "测试很测试很多数据的测试很多数据的多数据的"});
     }
 
     /**
@@ -437,83 +413,10 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
      */
     public void initRecyclerview(RecyclerView recyclerView, BaseQuickAdapter baseQuickAdapter, @RecyclerView.Orientation int orientation) {
         LinearLayoutManager managere = new LinearLayoutManager(this, orientation, false);
-//        baseQuickAdapter.setEmptyView(getAdapterEmptyView("一条记录也没有", emptyImage));
-        baseQuickAdapter.setHeaderAndEmpty(true);
+//        baseQuickAdapter.setEmptyView(getAdapterEmptyView("一条信息也没有",0));
         recyclerView.setLayoutManager(managere);
         recyclerView.setAdapter(baseQuickAdapter);
     }
-
-    /**
-     * 获取空布局
-     *
-     * @param text
-     * @return
-     */
-    public View getAdapterEmptyView(String text, int imageId) {
-        View view = LayoutInflater.from(this).inflate(R.layout.empty_view, null);
-        TextView noticeTv = view.findViewById(R.id.none_tv);
-        noticeTv.setText(text);
-        ImageView imageView = view.findViewById(R.id.none_image);
-        if (-1==imageId) {
-            imageView.setVisibility(View.GONE);
-        }else {
-            imageView.setVisibility(View.VISIBLE);
-            imageView.setImageResource(imageId);
-        }
-
-        return view;
-    }
-
-    /**
-     * 释放imageview内存资源
-     *
-     * @param imageView
-     */
-    public void recycleImageView(ImageView imageView) {
-        Bitmap bm = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        bm.recycle();
-        bm = null;
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
-    public void receiveMsg(String test) {
-//        if ("888888".equals(test)) {
-//            LogUtil.e(test);
-//        }
-    }
-    /**
-     * 设置顶部图标
-     * @param textView
-     * @param drawableId
-     */
-    public void initViewTopDrawable(TextView textView, int drawableId, int width, int height) {
-        Drawable drawable = getResources().getDrawable(drawableId);
-        drawable.setBounds(0, 0, DisplayUtil.dp2px(this, width), DisplayUtil.dp2px(this, height));//第一个 0 是距左边距离，第二个 0 是距上边距离，40 分别是长宽
-        textView.setCompoundDrawables(null, drawable, null, null);//放顶部
-    }
-    /**
-     * 设置左边图标
-     * @param textView
-     * @param drawableId
-     */
-    public void initViewLeftDrawable(TextView textView, int drawableId, int width, int height) {
-        Drawable drawable = getResources().getDrawable(drawableId);
-        drawable.setBounds(0, 0, DisplayUtil.dp2px(this, width), DisplayUtil.dp2px(this, height));//第一个 0 是距左边距离，第二个 0 是距上边距离，40 分别是长宽
-        textView.setCompoundDrawables(drawable, null, null, null);//放左边
-    }
-
-    /**
-     * 设置右边图标
-     *
-     * @param textView
-     * @param drawableId
-     */
-    public void initViewRightDrawable(TextView textView, int drawableId, int width, int height) {
-        Drawable drawable = getResources().getDrawable(drawableId);
-        drawable.setBounds(0, 0, DisplayUtil.dp2px(this, width), DisplayUtil.dp2px(this, height));//第一个 0 是距左边距离，第二个 0 是距上边距离，40 分别是长宽
-        textView.setCompoundDrawables(null, null, drawable, null);//只放右边
-    }
-
     /**
      * 添加分割线
      *
@@ -547,6 +450,136 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
     }
 
     /**
+     * 获取空布局
+     *
+     * @param text
+     * @return
+     */
+    public View getAdapterEmptyView(String text, int imageId) {
+        View view = LayoutInflater.from(this).inflate(R.layout.empty_view, null);
+        TextView noticeTv = view.findViewById(R.id.none_tv);
+        noticeTv.setText(text);
+        ImageView imageView = view.findViewById(R.id.none_image);
+        if (0==imageId) {
+            imageView.setVisibility(View.GONE);
+        }else {
+            imageView.setImageResource(imageId);
+        }
+        return view;
+    }
+
+    /**
+     * 释放imageview内存资源
+     *
+     * @param imageView
+     */
+    public void recycleImageView(ImageView imageView) {
+        Bitmap bm = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        bm.recycle();
+        bm = null;
+    }
+    //单点登录
+    public  void singleLogin(){}
+    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+    public void receiveMsg(String msg) {
+        switch (msg) {
+            case EventManager.SINGLE_LOGIN:
+                //单点登录
+                singleLogin();
+                break;
+            default:
+                break;
+        }
+    }
+    /**
+     * 配置view的margin属性
+     */
+    public void setMargin(View view, int left, int top, int right, int bottom) {
+        left = DisplayUtil.dp2px(this, left);
+        top = DisplayUtil.dp2px(this, top);
+        right = DisplayUtil.dp2px(this, right);
+        bottom = DisplayUtil.dp2px(this, bottom);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(view.getLayoutParams());
+        layoutParams.setMargins(left, top, right, bottom);
+        view.setLayoutParams(layoutParams);
+    }
+    /**
+     * 隐藏软键盘  view 可以是当前点击的view 没必要全是edittext
+     */
+    public void hideKeyboardFromView(View view) {
+        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+    /**
+     * view获取焦点
+     */
+    public  void getViewFocus(View view) {
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+    }
+    /**
+     * 显示软键盘
+     *
+     * @param view
+     */
+    public void openKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(view, InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+
+    }
+
+    /**
+     * 拨打电话
+     */
+    public void makeAPhoneCall(String telNum) {
+        View view = getLayoutInflater().inflate(R.layout.call_layout, null);
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .create();
+        alertDialog.show();
+        final TextView phone = view.findViewById(R.id.property_phone_no_tv);
+        phone.setText(telNum);
+        view.findViewById(R.id.call_property_tv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new RxPermissions(BaseActivity.this)
+                        .request(new String[]{
+                                Manifest.permission.CALL_PHONE})
+                        .delay(1, TimeUnit.SECONDS)
+                        .compose(bindUntilEvent(ActivityEvent.DESTROY))
+                        .subscribe(new Consumer<Boolean>() {
+                            @Override
+                            public void accept(Boolean aBoolean) throws Exception {
+                                if (aBoolean) {
+
+                                } else {
+                                    //有一个权限没通过
+                                }
+                                //所有权限通过
+                                alertDialog.dismiss();
+                                PubUtil.callPhone(BaseActivity.this, phone.getText().toString().trim());
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                            }
+                        });
+            }
+        });
+        view.findViewById(R.id.cancel_call_tv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+    }
+    /**
      * 压缩图片
      * @param path  图片路径
      * @param saveDirName  保存本地图片的目录
@@ -555,15 +588,15 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
      */
     public void  compressImage(String path, String saveDirName,
                                String saveFileName,OnImageCompressedPath onImageCompressedPath) {
-//        showLoadingDialog(mContext);
+        //        showLoadingDialog(mContext);
         Luban.with(mContext).load(path).ignoreBy(100)
                 .setTargetDir(FileCacheUtils.getAppImagePath(saveDirName))
                 .filter(new CompressionPredicate() {
-            @Override
-            public boolean apply(String path) {
-                return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
-            }
-        }).setRenameListener(new OnRenameListener() {
+                    @Override
+                    public boolean apply(String path) {
+                        return !(TextUtils.isEmpty(path) || path.toLowerCase().endsWith(".gif"));
+                    }
+                }).setRenameListener(new OnRenameListener() {
             @Override
             public String rename(String filePath) {
                 return TextUtils.isEmpty(saveFileName)||saveFileName==null?System.currentTimeMillis()+".jpg":
@@ -571,27 +604,27 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
             }
         })
                 .setCompressListener(new OnCompressListener() {
-            @Override
-            public void onStart() {
-                //  压缩开始前调用，可以在方法内启动 loading UI
+                    @Override
+                    public void onStart() {
+                        //  压缩开始前调用，可以在方法内启动 loading UI
 
-            }
+                    }
 
-            @Override
-            public void onSuccess(File file) {
-                //  压缩成功后调用，返回压缩后的图片文件
-                if (onImageCompressedPath != null) {
-                    onImageCompressedPath.compressedImagePath(file);
-                }
-                stopLoadingDialog();
-            }
+                    @Override
+                    public void onSuccess(File file) {
+                        //  压缩成功后调用，返回压缩后的图片文件
+                        if (onImageCompressedPath != null) {
+                            onImageCompressedPath.compressedImagePath(file);
+                        }
+                        stopLoadingDialog();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                LogUtil.e("push-图片压缩失败");
-                stopLoadingDialog();
-            }
-        }).launch();
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtil.e("push-图片压缩失败");
+                        stopLoadingDialog();
+                    }
+                }).launch();
     }
 
     /**
@@ -599,5 +632,16 @@ public abstract class BaseActivity extends RxAppCompatActivity implements Toolba
      */
     public interface OnImageCompressedPath {
         void  compressedImagePath(File file);
+    }
+
+    /**
+     * 设置左边图标
+     * @param textView
+     * @param drawableId
+     */
+    public void initViewLeftDrawable(TextView textView, int drawableId, int width, int height) {
+        Drawable drawable = getResources().getDrawable(drawableId);
+        drawable.setBounds(0, 0, DisplayUtil.dp2px(this, width), DisplayUtil.dp2px(this, height));//第一个 0 是距左边距离，第二个 0 是距上边距离，40 分别是长宽
+        textView.setCompoundDrawables(drawable, null, null, null);//放左边
     }
 }

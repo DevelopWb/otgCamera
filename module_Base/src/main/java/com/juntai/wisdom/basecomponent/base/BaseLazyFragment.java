@@ -1,6 +1,7 @@
 package com.juntai.wisdom.basecomponent.base;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 

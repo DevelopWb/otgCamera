@@ -12,9 +12,12 @@ import org.greenrobot.eventbus.EventBus;
  * @UpdateDate: 2020/4/11 11:34
  */
 public class EventManager {
+    public final static String  SINGLE_LOGIN = "single_login";//单点登录
+
+
     private static final EventBus libraryEvent = EventBus.builder().build();
 
-    public static EventBus getLibraryEvent() {
+    public static EventBus getEventBus() {
         return libraryEvent;
     }
 
@@ -24,10 +27,4 @@ public class EventManager {
         }
     }
 
-    public static void sendStringMsg(String str) {
-        libraryEvent.post(str);
-    }
-    public static void sendImage(ImageView iv) {
-        libraryEvent.post(iv);
-    }
 }

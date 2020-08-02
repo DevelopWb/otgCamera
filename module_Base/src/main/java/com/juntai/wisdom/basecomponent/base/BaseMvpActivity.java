@@ -1,16 +1,17 @@
 package com.juntai.wisdom.basecomponent.base;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.juntai.wisdom.basecomponent.mvp.BasePresenter;
-import com.juntai.wisdom.basecomponent.mvp.IView;
+import com.juntai.wisdom.basecomponent.mvp.BaseIView;
 import com.juntai.wisdom.basecomponent.utils.LogUtil;
 import com.juntai.wisdom.basecomponent.utils.ToastUtils;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
-public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActivity implements IView {
+public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActivity implements BaseIView {
 
 
     protected P mPresenter;
@@ -34,7 +35,6 @@ public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActiv
         super.onDestroy();
         if (mPresenter != null) {
             mPresenter.detachView();
-            mPresenter =null;
         }
     }
 
@@ -72,6 +72,5 @@ public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActiv
     public void onError(String tag, Object o) {
         LogUtil.d("tag-->" +tag);
         ToastUtils.error(this,(String)o);
-
     }
 }
